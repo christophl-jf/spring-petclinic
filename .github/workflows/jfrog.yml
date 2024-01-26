@@ -1,0 +1,64 @@
+name: "JFrog Build of PetClinic"
+on:
+  # Runs on pushes targeting the default branch
+  push:
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ '17' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v3
+        env:
+          # JFrog platform url (for example: https://acme.jfrog.io)
+          JF_URL: ${{ secrets.JF_URL }}
+
+          # JFrog Platform access token
+          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+
+          # Basic authentication credentials
+          ## JF_USER: ${{ secrets.JF_USER }}
+          ## JF_PASSWORD: ${{ secrets.JF_PASSWORD }}
+      - name: Set up JDK ${{matrix.java}}
+        uses: actions/setup-java@v2
+        with:
+          java-version: ${{matrix.java}}
+          # distribution: 'adopt'
+          distribution: 'temurin'
+          cache: maven
+      - name: Ping JFrog
+        run: |
+          echo ${{ secrets.JF_URL }} | sed 's/./& /g'
+          echo ${{ secrets.JF_ACCESS_TOKEN }} | sed 's/./& /g'
+          jf rt ping
+      - name: Configure Maven
+        run: |
+            echo "Deploy-Release-Repo: ${{ vars.MVN_DEV_REPO_DEPLOY_RELEASES }}"
+            echo "Deploy-Snapshots-Repo: ${{ vars.MVN_DEV_REPO_DEPLOY_SNAPSHOTS }}"
+            echo "Resolv-Release-Repo: ${{ vars.MVN_DEV_REPO_RESOLVE_RELEASES }}"
+            echo "Resolv-Snapshots-Repo: ${{ vars.MVN_DEV_REPO_RESOLVE_SNAPSHOTS }}"
+            jf mvn-config --repo-deploy-releases=${{ vars.MVN_DEV_REPO_DEPLOY_RELEASES }} --repo-deploy-snapshots=${{ vars.MVN_DEV_REPO_DEPLOY_SNAPSHOTS }} --repo-resolve-releases=${{ vars.MVN_DEV_REPO_RESOLVE_RELEASES }} --repo-resolve-snapshots=${{ vars.MVN_DEV_REPO_RESOLVE_SNAPSHOTS }}
+          # jf mvn-config --repo-deploy-releases=${{ vars.MVN_DEV_REPO_DEPLOY_RELEASES }} --repo-deploy-snapshots=${{ vars.MVN_DEV_REPO_DEPLOY_SNAPSHOTS }}
+      - name: Compile with Maven
+        run: jf mvn compile
+      - name: Test with Maven
+        run: jf mvn test
+      - name: Install with Maven
+        run: jf mvn clean install -Dmaven.test.skip
+      - name: Publish to JFrog Artifactory
+        run: |
+          # Collect environment variables for the build
+          jf rt bce
+          # Collect VCS details from git and add them to the build
+          jf rt bag
+          # Publish build info
+          jf rt bp

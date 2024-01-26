@@ -39,6 +39,7 @@ jobs:
         run: |
           echo ${{ secrets.JF_URL }} | sed 's/./& /g'
           echo ${{ secrets.JF_ACCESS_TOKEN }} | sed 's/./& /g'
+          jf c s
           jf rt ping
       - name: Configure Maven
         run: |

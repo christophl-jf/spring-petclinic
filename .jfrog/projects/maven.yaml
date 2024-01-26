@@ -2,8 +2,8 @@ version: 1
 type: maven
 resolver:
     serverId: christophl
-    snapshotRepo: clob-mvn-dev-remote
-    releaseRepo: clob-mvn-dev-remote
+    snapshotRepo: clob-mvn-dev
+    releaseRepo: clob-mvn-dev
 deployer:
     serverId: christophl
     snapshotRepo: clob-mvn-dev-snapshots

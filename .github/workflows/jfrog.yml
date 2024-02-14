@@ -37,10 +37,10 @@ jobs:
           echo ${{ secrets.JF_ACCESS_TOKEN }} | sed 's/./& /g'
           jf c s
           jf rt ping
-      - name: Set up JDK ${{matrix.java}}
+      - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v2
         with:
-          java-version: ${{matrix.java}}
+          java-version: ${{ matrix.java }}
           # distribution: 'adopt'
           distribution: 'temurin'
           cache: maven
@@ -55,8 +55,8 @@ jobs:
         run: jf mvn clean install --project "${{ vars.JFROG_PROJECT }}"
       - name: Build container image and push to JFrog Artifactory
         run: |
-          jf docker build -t "${{ secrets.JF_URL }}/${{ vars.DOCKER_DEV_REPO }}/${DOCKER_IAMGE}:latest" .
-          jf docker push "${{ secrets.JF_URL }}/${{ vars.DOCKER_DEV_REPO }}/${DOCKER_IAMGE}:latest"
+          jf docker build -t "${{ secrets.JF_URL }}/${{ vars.DOCKER_DEV_REPO }}/${DOCKER_IMAGE}:latest" .
+          jf docker push "${{ secrets.JF_URL }}/${{ vars.DOCKER_DEV_REPO }}/${DOCKER_IMAGE}:latest"
       - name: Publish to JFrog Artifactory
         run: |
           # Collect environment variables for the build

@@ -55,7 +55,7 @@ jobs:
       - name: Test with Maven
         run: jf mvn test
       - name: Install with Maven
-        run: jf mvn clean install
+        run: jf mvn clean install --build-name spring-petclinic --build-number 3.2.0-SNAPSHOT
       - name: Publish to JFrog Artifactory
         run: |
           # Collect environment variables for the build

@@ -51,7 +51,7 @@ jobs:
             echo "Resolv-Snapshots-Repo: ${{ vars.MVN_DEV_REPO_RESOLVE_SNAPSHOTS }}"
             jf mvn-config --repo-deploy-releases=${{ vars.MVN_DEV_REPO_DEPLOY_RELEASES }} --repo-deploy-snapshots=${{ vars.MVN_DEV_REPO_DEPLOY_SNAPSHOTS }} --repo-resolve-releases=${{ vars.MVN_DEV_REPO_RESOLVE_RELEASES }} --repo-resolve-snapshots=${{ vars.MVN_DEV_REPO_RESOLVE_SNAPSHOTS }}
       - name: Install with Maven
-        run: jf mvn clean install --build-name spring-petclinic --build-number 3.2.0-SNAPSHOT
+        run: jf mvn clean install --project christophl
       - name: Publish to JFrog Artifactory
         run: |
           # Collect environment variables for the build
@@ -59,7 +59,7 @@ jobs:
           # Collect VCS details from git and add them to the build
           jf rt bag
           # Publish build info
-          jf rt bp spring-petclinic 3.2.0-SNAPSHOT
+          jf rt bp --project christophl
       - name: Build container image and push to JFrog Artifactory
         run: |
           jf docker build -t soleng.jfrog.io/christophl-docker-dev/spring-petclinic-3.2.0-snapshot:latest .

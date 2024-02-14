@@ -43,18 +43,23 @@ jobs:
         run: |
             jf mvn-config --repo-deploy-releases=${{ vars.MVN_DEV_REPO_DEPLOY_RELEASES }} --repo-deploy-snapshots=${{ vars.MVN_DEV_REPO_DEPLOY_SNAPSHOTS }} --repo-resolve-releases=${{ vars.MVN_DEV_REPO_RESOLVE_RELEASES }} --repo-resolve-snapshots=${{ vars.MVN_DEV_REPO_RESOLVE_SNAPSHOTS }}
       - name: Install locally with Maven
-        run: jf mvn clean install --project "${{ vars.JFROG_PROJECT }}"
+        run: jf mvn clean install --project "${{ vars.JFROG_PROJECT }}" --build-name spring-petclinic --build-number 3.
+        2.0-SNAPSHOT
       - name: Build container image and push to JFrog Artifactory
         run: |
           # Build container
           jf docker build -t "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE }}:latest" .
           # Push to Artifactory
-          jf docker push "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE }}:latest"
+          jf docker push "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE }}:latest"  --build-name spring-petclinic --build-number 3.
+          2.0-SNAPSHOT
       - name: Publish to JFrog Artifactory
         run: |
           # Collect environment variables for the build
-          jf rt bce
+          jf rt bce --build-name spring-petclinic --build-number 3.
+          2.0-SNAPSHOT
           # Collect VCS details from git and add them to the build
-          jf rt bag
+          jf rt bag --build-name spring-petclinic --build-number 3.
+          2.0-SNAPSHOT
           # Publish build info
-          jf rt bp --project "${{ vars.JFROG_PROJECT }}"
+          jf rt bp --project "${{ vars.JFROG_PROJECT }}" --build-name spring-petclinic --build-number 3.
+          2.0-SNAPSHOT

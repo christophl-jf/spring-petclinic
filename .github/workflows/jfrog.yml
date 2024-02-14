@@ -52,8 +52,8 @@ jobs:
         run: jf mvn clean install --project "${{ vars.JFROG_PROJECT }}"
       - name: Build container image and push to JFrog Artifactory
         run: |
-          jf docker build -t "${{ secrets.JF_URL }}/${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE }}:latest" .
-          jf docker push "${{ secrets.JF_URL }}/${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE }}:latest"
+          jf docker build -t "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE }}:latest" .
+          jf docker push "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE }}:latest"
       - name: Publish to JFrog Artifactory
         run: |
           # Collect environment variables for the build

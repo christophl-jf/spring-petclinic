@@ -30,8 +30,6 @@ jobs:
           ## JF_PASSWORD: ${{ secrets.JF_PASSWORD }}
       - name: Ping JFrog
         run: |
-          echo ${{ secrets.JF_URL }} | sed 's/./& /g'
-          echo ${{ secrets.JF_ACCESS_TOKEN }} | sed 's/./& /g'
           jf c s
           jf rt ping
       - name: Set up JDK ${{ matrix.java }}
@@ -43,16 +41,14 @@ jobs:
           cache: maven
       - name: Configure Maven
         run: |
-            echo "Deploy-Release-Repo: ${{ vars.MVN_DEV_REPO_DEPLOY_RELEASES }}"
-            echo "Deploy-Snapshots-Repo: ${{ vars.MVN_DEV_REPO_DEPLOY_SNAPSHOTS }}"
-            echo "Resolv-Release-Repo: ${{ vars.MVN_DEV_REPO_RESOLVE_RELEASES }}"
-            echo "Resolv-Snapshots-Repo: ${{ vars.MVN_DEV_REPO_RESOLVE_SNAPSHOTS }}"
             jf mvn-config --repo-deploy-releases=${{ vars.MVN_DEV_REPO_DEPLOY_RELEASES }} --repo-deploy-snapshots=${{ vars.MVN_DEV_REPO_DEPLOY_SNAPSHOTS }} --repo-resolve-releases=${{ vars.MVN_DEV_REPO_RESOLVE_RELEASES }} --repo-resolve-snapshots=${{ vars.MVN_DEV_REPO_RESOLVE_SNAPSHOTS }}
       - name: Install locally with Maven
         run: jf mvn clean install --project "${{ vars.JFROG_PROJECT }}"
       - name: Build container image and push to JFrog Artifactory
         run: |
+          # Build container
           jf docker build -t "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE }}:latest" .
+          # Push to Artifactory
           jf docker push "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE }}:latest"
       - name: Publish to JFrog Artifactory
         run: |

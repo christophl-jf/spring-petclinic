@@ -28,6 +28,8 @@ jobs:
           # Basic authentication credentials
           ## JF_USER: ${{ secrets.JF_USER }}
           ## JF_PASSWORD: ${{ secrets.JF_PASSWORD }}
+          buildInfo.env.publisher.publishArtifacts: true
+          buildInfo.env.publisher.publishBuildInfo: true
       - name: Ping JFrog
         run: |
           echo ${{ secrets.JF_URL }} | sed 's/./& /g'
@@ -48,13 +50,12 @@ jobs:
             echo "Resolv-Release-Repo: ${{ vars.MVN_DEV_REPO_RESOLVE_RELEASES }}"
             echo "Resolv-Snapshots-Repo: ${{ vars.MVN_DEV_REPO_RESOLVE_SNAPSHOTS }}"
             jf mvn-config --repo-deploy-releases=${{ vars.MVN_DEV_REPO_DEPLOY_RELEASES }} --repo-deploy-snapshots=${{ vars.MVN_DEV_REPO_DEPLOY_SNAPSHOTS }} --repo-resolve-releases=${{ vars.MVN_DEV_REPO_RESOLVE_RELEASES }} --repo-resolve-snapshots=${{ vars.MVN_DEV_REPO_RESOLVE_SNAPSHOTS }}
-            # jf mvn-config --repo-deploy-releases=${{ vars.MVN_DEV_REPO_DEPLOY_RELEASES }} --repo-deploy-snapshots=${{ vars.MVN_DEV_REPO_DEPLOY_SNAPSHOTS }}
       - name: Compile with Maven
         run: jf mvn compile
       - name: Test with Maven
         run: jf mvn test
       - name: Install with Maven
-        run: jf mvn clean install -Dmaven.test.skip
+        run: jf mvn clean install
       - name: Publish to JFrog Artifactory
         run: |
           # Collect environment variables for the build

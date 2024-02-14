@@ -43,7 +43,7 @@ jobs:
         run: |
             jf mvn-config --repo-deploy-releases=${{ vars.MVN_DEV_REPO_DEPLOY_RELEASES }} --repo-deploy-snapshots=${{ vars.MVN_DEV_REPO_DEPLOY_SNAPSHOTS }} --repo-resolve-releases=${{ vars.MVN_DEV_REPO_RESOLVE_RELEASES }} --repo-resolve-snapshots=${{ vars.MVN_DEV_REPO_RESOLVE_SNAPSHOTS }}
       - name: Install locally with Maven
-        run: jf mvn clean install --project "${{ vars.JFROG_PROJECT }}" --build-name spring-petclinic --build-number 3.2.0-SNAPSHOT
+        run: jf mvn clean install --project "${{ vars.JFROG_PROJECT }}"
       - name: Build container image and push to JFrog Artifactory
         run: |
           # Build container

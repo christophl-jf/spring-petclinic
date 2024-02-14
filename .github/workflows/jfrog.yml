@@ -53,8 +53,8 @@ jobs:
       - name: Publish to JFrog Artifactory
         run: |
           # Collect environment variables for the build
-          jf rt bce --build-name spring-petclinic --build-number 3.2.0-SNAPSHOT
+          jf rt bce --project "${{ vars.JFROG_PROJECT }}"
           # Collect VCS details from git and add them to the build
-          jf rt bag --build-name spring-petclinic --build-number 3.2.0-SNAPSHOT
+          jf rt bag --project "${{ vars.JFROG_PROJECT }}"
           # Publish build info
-          jf rt bp --project "${{ vars.JFROG_PROJECT }}" --build-name spring-petclinic --build-number 3.2.0-SNAPSHOT
+          jf rt bp --project "${{ vars.JFROG_PROJECT }}"

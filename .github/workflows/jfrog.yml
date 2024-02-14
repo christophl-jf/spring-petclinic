@@ -47,9 +47,9 @@ jobs:
       - name: Build container image and push to JFrog Artifactory
         run: |
           # Build container
-          jf docker build -t "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE }}:latest" .
+          jf docker build -t "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE }}:latest" .  --project "${{ vars.JFROG_PROJECT }}"
           # Push to Artifactory
-          jf docker push "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE }}:latest"  --build-name spring-petclinic --build-number 3.2.0-SNAPSHOT
+          jf docker push "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE }}:latest"  --project "${{ vars.JFROG_PROJECT }}"
       - name: Publish to JFrog Artifactory
         run: |
           # Collect environment variables for the build

@@ -17,7 +17,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup JFrog CLI
-        uses: jfrog/setup-jfrog-cli@v3
+        uses: jfrog/setup-jfrog-cli@v3.5.2
         env:
           # JFrog platform url (for example: https://acme.jfrog.io)
           JF_URL: ${{ secrets.JF_URL }}
@@ -39,9 +39,13 @@ jobs:
           # distribution: 'adopt'
           distribution: 'temurin'
           cache: maven
+      - name: Read POM
+        run: |
+          echo "petclinicArtifactName=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV
+          echo "petclinicVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
       - name: Configure Maven
         run: |
-            jf mvn-config --repo-deploy-releases=${{ vars.MVN_DEV_REPO_DEPLOY_RELEASES }} --repo-deploy-snapshots=${{ vars.MVN_DEV_REPO_DEPLOY_SNAPSHOTS }} --repo-resolve-releases=${{ vars.MVN_DEV_REPO_RESOLVE_RELEASES }} --repo-resolve-snapshots=${{ vars.MVN_DEV_REPO_RESOLVE_SNAPSHOTS }}
+          jf mvn-config --repo-deploy-releases=${{ vars.MVN_DEV_REPO_DEPLOY_RELEASES }} --repo-deploy-snapshots=${{ vars.MVN_DEV_REPO_DEPLOY_SNAPSHOTS }} --repo-resolve-releases=${{ vars.MVN_DEV_REPO_RESOLVE_RELEASES }} --repo-resolve-snapshots=${{ vars.MVN_DEV_REPO_RESOLVE_SNAPSHOTS }}
       - name: Compile with Maven
         run: jf mvn compile
       - name: Test with Maven
@@ -51,9 +55,9 @@ jobs:
       - name: Build container image and push to JFrog Artifactory
         run: |
           # Build container
-          jf docker build -t "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE }}:latest" .  --project "${{ vars.JFROG_PROJECT }}"
+          jf docker build -t "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE }}:${{ env.petclinicVersion }}" --build-arg petclinicArtifact=./target/${{ env.petclinicArtifactName }}-${{ env.petclinicVersion }}.jar .  --project "${{ vars.JFROG_PROJECT }}"
           # Push to Artifactory
-          jf docker push "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE }}:latest"  --project "${{ vars.JFROG_PROJECT }}"
+          jf docker push "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE }}:${{ env.petclinicVersion }}"  --project "${{ vars.JFROG_PROJECT }}"
       - name: Publish to JFrog Artifactory
         run: |
           # Collect environment variables for the build

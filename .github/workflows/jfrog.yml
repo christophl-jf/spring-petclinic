@@ -55,9 +55,9 @@ jobs:
       - name: Build container image and push to JFrog Artifactory
         run: |
           # Build container
-          jf docker build -t "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE }}:${{ env.petclinicVersion }}" --build-arg petclinicArtifact=./target/${{ env.petclinicArtifactName }}-${{ env.petclinicVersion }}.jar .  --project "${{ vars.JFROG_PROJECT }}"
+          jf docker build -t "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE_PREFIX }}${{ env.petclinicArtifactName }}:${{ env.petclinicVersion }}" --build-arg petclinicArtifact=./target/${{ env.petclinicArtifactName }}-${{ env.petclinicVersion }}.jar .  --project "${{ vars.JFROG_PROJECT }}"
           # Push to Artifactory
-          jf docker push "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE }}:${{ env.petclinicVersion }}"  --project "${{ vars.JFROG_PROJECT }}"
+          jf docker push "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE_PREFIX }}${{ env.petclinicArtifactName }}:${{ env.petclinicVersion }}"  --project "${{ vars.JFROG_PROJECT }}"
       - name: Publish to JFrog Artifactory
         run: |
           # Collect environment variables for the build

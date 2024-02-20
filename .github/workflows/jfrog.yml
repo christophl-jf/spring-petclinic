@@ -28,7 +28,7 @@ jobs:
           # Basic authentication credentials
           ## JF_USER: ${{ secrets.JF_USER }}
           ## JF_PASSWORD: ${{ secrets.JF_PASSWORD }}
-      - name: Ping JFrog
+      - name: Show JFrog connection status and ping JFrog
         run: |
           jf c s
           jf rt ping

@@ -52,6 +52,8 @@ jobs:
         run: jf mvn test
       - name: Install locally with Maven
         run: jf mvn clean install --project "${{ vars.JFROG_PROJECT }}"
+      - name: Scan locally
+        run: jf scan "./target/*"
       - name: Build container image and push to JFrog Artifactory
         run: |
           # Build container

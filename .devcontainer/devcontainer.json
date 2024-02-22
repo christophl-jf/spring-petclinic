@@ -28,7 +28,8 @@
 		"vscjava.vscode-java-pack",
 		"redhat.vscode-xml",
 		"vmware.vscode-boot-dev-pack",
-		"mhutchie.git-graph"
+		"mhutchie.git-graph",
+		"JFrog.jfrog-vscode-extension"
 	],
 	"forwardPorts": [8080],
 	"settings": {

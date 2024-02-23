@@ -68,4 +68,4 @@ jobs:
           # Publish build info
           jf rt bp --project "${{ vars.JFROG_PROJECT }}"
       - name: Scan build with JFrog Xray
-        run: jf build-scan
+        run: jf build-scan --project "${{ vars.JFROG_PROJECT }}"

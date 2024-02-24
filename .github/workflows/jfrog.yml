@@ -1,4 +1,4 @@
-name: "JFrog_Build_of_PetClinic"
+name: "JFrog Build of PetClinic"
 on:
   # Runs on pushes targeting the default branch
   push:

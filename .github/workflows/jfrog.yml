@@ -45,10 +45,8 @@ jobs:
           echo "petclinicVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
       - name: Configure Maven tu use repositories provided by JFrog Artifactory
         run: jf mvn-config --repo-deploy-releases=${{ vars.MVN_DEV_REPO_DEPLOY_RELEASES }} --repo-deploy-snapshots=${{ vars.MVN_DEV_REPO_DEPLOY_SNAPSHOTS }} --repo-resolve-releases=${{ vars.MVN_DEV_REPO_RESOLVE_RELEASES }} --repo-resolve-snapshots=${{ vars.MVN_DEV_REPO_RESOLVE_SNAPSHOTS }}
-      - name: Compile with Maven
-        run: jf mvn compile
-      - name: Test with Maven
-        run: jf mvn test
+      - name: Run a source code audit
+        run: jf audit --licenses --format=table --mvn=true
       - name: Install locally with Maven
         run: jf mvn clean install --project "${{ vars.JFROG_PROJECT }}"
       - name: Scan jar file locally with JFrog Xray

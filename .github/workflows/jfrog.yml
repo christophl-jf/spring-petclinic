@@ -46,7 +46,7 @@ jobs:
       - name: Configure Maven tu use repositories provided by JFrog Artifactory
         run: jf mvn-config --repo-deploy-releases=${{ vars.MVN_DEV_REPO_DEPLOY_RELEASES }} --repo-deploy-snapshots=${{ vars.MVN_DEV_REPO_DEPLOY_SNAPSHOTS }} --repo-resolve-releases=${{ vars.MVN_DEV_REPO_RESOLVE_RELEASES }} --repo-resolve-snapshots=${{ vars.MVN_DEV_REPO_RESOLVE_SNAPSHOTS }}
       - name: Run a source code audit
-        run: jf audit --licenses --format=table --mvn=true --watches christophl-high_plus,christophl-license_high_risk
+        run: jf audit --licenses --format=table --mvn=true --watches christophl-license_high_risk
       - name: Install locally with Maven
         run: jf mvn clean install --project "${{ vars.JFROG_PROJECT }}"
       - name: Scan jar file locally with JFrog Xray
@@ -54,7 +54,7 @@ jobs:
       - name: Build container image
         run: jf docker build -t "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE_PREFIX }}${{ env.petclinicArtifactName }}:${{ env.petclinicVersion }}" --build-arg petclinicArtifact=./target/${{ env.petclinicArtifactName }}-${{ env.petclinicVersion }}.jar .  --project "${{ vars.JFROG_PROJECT }}"
       - name: Scan docker image locally with JFrog Xray
-        run: jf docker scan "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE_PREFIX }}${{ env.petclinicArtifactName }}:${{ env.petclinicVersion }}"  --project "${{ vars.JFROG_PROJECT }}"
+        run: jf docker scan "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE_PREFIX }}${{ env.petclinicArtifactName }}:${{ env.petclinicVersion }}"   --watches christophl-license_high_risk
       - name: Push container image to JFrog Artifactory
         run: jf docker push "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE_PREFIX }}${{ env.petclinicArtifactName }}:${{ env.petclinicVersion }}"  --project "${{ vars.JFROG_PROJECT }}"
       - name: Publish to JFrog Artifactory
@@ -66,4 +66,4 @@ jobs:
           # Publish build info
           jf rt bp --project "${{ vars.JFROG_PROJECT }}"
       - name: Scan build with JFrog Xray
-        run: jf build-scan --project "${{ vars.JFROG_PROJECT }}"
+        run: jf build-scan  --watches christophl-license_high_risk

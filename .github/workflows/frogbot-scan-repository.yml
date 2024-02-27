@@ -16,7 +16,7 @@ jobs:
         # The repository scanning will be triggered periodically on the following branches.
         branch: ["main"]
     steps:
-      - uses: jfrog/frogbot@v2.9.2
+      - uses: jfrog/frogbot@v2
         env:
           # [Mandatory]
           # JFrog platform URL
@@ -81,7 +81,7 @@ jobs:
 
           # [Optional]
           # JFrog project. Learn more about it here: https://www.jfrog.com/confluence/display/JFROG/Projects
-          # JF_PROJECT: <project-key>
+          JF_PROJECT: christophl
 
           # [Optional, default: "TRUE"]
           # Fails the Frogbot task if any security issue is found.

@@ -1,0 +1,69 @@
+name: "JFrog Build of PetClinic"
+on:
+  # Runs on pushes targeting the default branch
+  #push:
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ '17' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v3.5.2
+        env:
+          # JFrog platform url (for example: https://acme.jfrog.io)
+          JF_URL: ${{ secrets.JF_URL }}
+
+          # JFrog Platform access token
+          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+
+          # Basic authentication credentials
+          ## JF_USER: ${{ secrets.JF_USER }}
+          ## JF_PASSWORD: ${{ secrets.JF_PASSWORD }}
+      - name: Show JFrog connection status and ping JFrog
+        run: |
+          jf c s
+          jf rt ping
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v2
+        with:
+          java-version: ${{ matrix.java }}
+          # distribution: 'adopt'
+          distribution: 'temurin'
+          cache: maven
+      - name: Extracting the artifact name and version from POM file
+        run: |
+          echo "petclinicArtifactName=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV
+          echo "petclinicVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+      - name: Configure Maven tu use repositories provided by JFrog Artifactory
+        run: jf mvn-config --repo-deploy-releases=${{ vars.MVN_DEV_REPO_DEPLOY_RELEASES }} --repo-deploy-snapshots=${{ vars.MVN_DEV_REPO_DEPLOY_SNAPSHOTS }} --repo-resolve-releases=${{ vars.MVN_DEV_REPO_RESOLVE_RELEASES }} --repo-resolve-snapshots=${{ vars.MVN_DEV_REPO_RESOLVE_SNAPSHOTS }}
+      - name: Run a source code audit
+        run: jf audit --licenses --format=table --mvn=true --watches christophl-license_high_risk --fail=false
+      - name: Install locally with Maven
+        run: jf mvn clean install --project "${{ vars.JFROG_PROJECT }}"
+      - name: Scan jar file locally with JFrog Xray
+        run: jf scan "./target/${{ env.petclinicArtifactName }}-${{ env.petclinicVersion }}.jar" --format=table  --watches christophl-malicious_packages
+      - name: Build container image
+        run: jf docker build -t "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE_PREFIX }}${{ env.petclinicArtifactName }}:${{ env.petclinicVersion }}" --build-arg petclinicArtifact=./target/${{ env.petclinicArtifactName }}-${{ env.petclinicVersion }}.jar .  --project "${{ vars.JFROG_PROJECT }}"
+      - name: Scan docker image locally with JFrog Xray
+        run: jf docker scan "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE_PREFIX }}${{ env.petclinicArtifactName }}:${{ env.petclinicVersion }}" --watches christophl-malicious_packages
+      - name: Push container image to JFrog Artifactory
+        run: jf docker push "${{ vars.DOCKER_DEV_REPO }}/${{ vars.DOCKER_IMAGE_PREFIX }}${{ env.petclinicArtifactName }}:${{ env.petclinicVersion }}" --project "${{ vars.JFROG_PROJECT }}"
+      - name: Publish to JFrog Artifactory
+        run: |
+          # Collect environment variables for the build
+          jf rt bce --project "${{ vars.JFROG_PROJECT }}"
+          # Collect VCS details from git and add them to the build
+          jf rt bag --project "${{ vars.JFROG_PROJECT }}"
+          # Publish build info
+          jf rt bp --project "${{ vars.JFROG_PROJECT }}"
+      - name: Scan build with JFrog Xray
+        run: jf build-scan --project "${{ vars.JFROG_PROJECT }}"

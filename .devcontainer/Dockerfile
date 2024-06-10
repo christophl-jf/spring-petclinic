@@ -27,3 +27,5 @@ RUN curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol |
 RUN mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22
 RUN curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
 RUN apt update && apt install 1password-cli
+# Install more tools
+RUN apt install lynx

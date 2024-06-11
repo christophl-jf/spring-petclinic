@@ -18,3 +18,4 @@ _site/
 .jfrog/*
 .mvn
 /gradle
+.jfrog/projects/maven.yaml

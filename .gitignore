@@ -1,3 +1,4 @@
+.jfrog/*
 target/*
 bin/*
 build/*
@@ -15,6 +16,5 @@ build/*
 _site/
 *.css
 !petclinic.css
-.jfrog/*
 .mvn
 /gradle
